@@ -214,6 +214,10 @@ module CMORizer
             cmds << CDO_MULC_cmd.new(100)
           when ["K", "degC"]
             cmds << CDO_SUBC_cmd.new(-273.15)
+          when ["mmolC/m2/d", "kg m-2 s-1"]
+            cmds << CDO_MULC_cmd.new(-1.390127e-10)  # negative sign to correct into ocean or into atm
+          when ["uatm", "Pa"]
+            cmd << CDO_MULC_cmd.new(0.101325)
           else
             raise "can not automatically convert unit from '#{from_unit}' to '#{to_unit}'"
           end          
