@@ -1,9 +1,20 @@
 module CMORizer
+  # The StepsChain class manages the sequence of processing steps for converting 
+  # FESOM variable data to CMOR-compliant format. It initializes the necessary steps, 
+  # handles the execution of these steps, and manages the metadata required for the process.
   class StepsChain
     attr_reader :input_variable_name, :input_frequency_name
-    
-    # fesom_variable_description: "fesom name"_"available frequency"
-    # cmor_variable_description: "variable_id"_"CMIP table_id"
+  
+    # Initializes a StepsChain instance.
+    #
+    # This constructor sets up the processing chain for converting FESOM variable data to CMOR-compliant format.
+    # It parses the provided descriptions for FESOM and CMOR variables, initializes the steps from a given block 
+    # or default step classes, and prepares the chain for execution.
+    #
+    # @param default_step_classes [Array<Class>] Default classes for processing steps if no specific steps are provided.
+    # @param fesom_variable_description [String] Description of the FESOM variable in the format "variable_name_frequency".
+    # @param cmor_variable_description [String] Description of the CMOR variable in the format "variable_id_table_id".
+    # @param block [Proc] An optional block to customize the processing steps.
     def initialize(default_step_classes, fesom_variable_description, cmor_variable_description, &block)
       @input_variable_name, @input_frequency_name = fesom_variable_description.split('_')
       @cmor_variable_id, @cmor_table_id = cmor_variable_description.split('_')
@@ -16,12 +27,21 @@ module CMORizer
       @step_classes = default_step_classes if @step_classes.empty?
     end
     
-    
+    # Returns a string representation of the steps chain.
+    #
+    # @return [String] A string in the format "input_variable_input_frequency ==> cmor_variable_id_cmor_table_id".
     def to_s
       "#{@input_variable_name}_#{@input_frequency_name} ==> #{@cmor_variable_id}_#{@cmor_table_id}"
     end
     
-    
+
+    # Executes the processing steps on the provided FESOM files.
+    #
+    # @param fesom_files [Array<File>] List of FESOM files to process.
+    # @param experiment [Experiment] The experiment metadata.
+    # @param data_request [DataRequest] The data request metadata.
+    # @param grid_description_file [String] The grid description file path.
+    # @param version_date [String] The version date for the output files.
     def execute(fesom_files, experiment, data_request, grid_description_file, version_date)      
       return if @step_classes.empty?
       
@@ -95,6 +115,17 @@ module CMORizer
     end
     
     
+    # Creates global attributes for the output files.
+    #
+    # @param experiment [Experiment] The experiment metadata.
+    # @param first_file_year [Integer] The year of the first file.
+    # @param last_file_year [Integer] The year of the last file.
+    # @param variable_id [String] The variable ID.
+    # @param frequency [String] The frequency of the data.
+    # @param table_id [String] The CMIP table ID.
+    # @param realms [Array<String>] The realms associated with the variable.
+    # @param version_date [String] The version date for the output files.
+    # @return [GlobalAttributes] The global attributes for the output files.
     private def create_global_attributes(experiment:, first_file_year:, last_file_year:, variable_id:, frequency:, table_id:, realms:, version_date:)
       builder = GlobalAttributesBuilder.new
       builder.set_experiment_info(id: experiment.experiment_id,
@@ -120,12 +151,19 @@ module CMORizer
     end
 
 
+    # Adds a processing step to the steps chain.
+    #
+    # @param sym [Symbol] The symbol representing the step class.
     private def add_step(sym)
       cls = CMORizer::Step.const_get sym
       @step_classes << cls
     end
 
-
+    # Handles undefined methods to add steps to the chain.
+    #
+    # @param method_sym [Symbol] The name of the undefined method.
+    # @param args [Array] The arguments passed to the undefined method.
+    # @param block [Proc] An optional block passed to the undefined method.
     def method_missing(method_sym, *args, &block)
       return super unless @eval_mode
       # we assume every unknown method designates a sub-task
