@@ -236,7 +236,7 @@ module CMORizer
             #
             # these notes are available on the following link
             # https://notes.desy.de/F8hTyk3PRielZrVdZRtyaQ?view#Seamore-missing-features-FESOM1-and-2
-            cmd << CDO_MULC_cmd.new(0.101325)
+            cmds << CDO_MULC_cmd.new(0.101325)
           else
             raise "can not automatically convert unit from '#{from_unit}' to '#{to_unit}'"
           end          
