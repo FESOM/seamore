@@ -178,6 +178,28 @@ module CMORizer
             cmds << CDO_YEARMEAN_cmd.new
           when ["day", "dec"], ["mon", "dec"]
             cmds << CDO_TIMMEAN_cmd.new # this will just create a single mean output, so make sure we put in a 10 years file
+          when ["mmolC/m2/d", "kg m-2 s-1"]
+             # notes on how this factor was derived (by chrisdane "Christopher Danek")
+             # e.g. recom variable: CO2f => CMIP6_Omon.json: fgco2
+             # 1) mmolC -> molC: /1e3
+             # 2) molC -> gC: *12.0107
+             # 3) gC -> kgC: /1e3
+             # 4) d-1 -> s-1: /86400
+             # -> mult_factor = 1/1e3*12.0107/1e3/86400 # = 1.390127e-10
+             # In the CMIP6_Omon.json:fgco2 case, an additional sign change is necessary:
+             # >0: into ocean -> >0: into atm: *-1
+             # -> mult_factor = mult_factor*-1
+             cmds << CDO_MULC_cmd.new(-1.390127e-10)  # negative sign to correct into ocean or into atm
+           when ["uatm", "Pa"]
+             # notes on how this factor was derived (by chrisdane "Christopher Danek")
+             # e.g. recom variable: pCO2s => CMIP6_Omon.json: spco2
+             # 1) µatm -> atm: /1e6
+             # 2) atm -> Pa: *1.01325e5 (1 atm = 1.01325e5 Pa)
+             # -> mult_factor = 1/1e6*1.01325e5 # = 0.101325
+             #
+             # these notes are available on the following link
+             # https://notes.desy.de/F8hTyk3PRielZrVdZRtyaQ?view#Seamore-missing-features-FESOM1-and-2
+             cmds << CDO_MULC_cmd.new(0.101325)          
           else
             raise "can not automatically downsample frequency from '#{in_freq.name}' to '#{out_freq.name}'"
           end

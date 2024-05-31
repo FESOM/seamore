@@ -1,0 +1,45 @@
+# === README ===
+# Before running the script, set appropriate path for the following variables
+# cmip6_cmor_tables, cmip6_csv_dir, setname, outdir
+# For "setname", the last argument is a path to a temporary directory. It is optional but for now,
+# it is recommanded to give a explict path.
+# "setname" arguments: source_directory, recom_variable_name, cmip_variable_name, year_start, year_end, temporary_directory
+# === END ===
+
+cmip6_cmor_tables "01.00.27", "/work/ab0995/a270243/cmip6-cmor-tables/Tables"
+cmip6_cvs_dir "/work/ab0995/a270243/CMIP6_CVs"
+merge_years_step 1
+version_date 2018, 12, 18 # YYYY, MM, DD
+source_id "AWI-CM-1-1-MR"
+grid_description_file "/pool/data/AWICM/FESOM2/MESHES_FESOM2.1/core2/core2_griddes_nodes.nc"
+
+#new_indir = setname "/work/ab0995/a270243/CO2f", "CO2f", "fgco2", 1850, 1860
+new_indir = setname "/work/ba1103/a270073/out/awicm-1.0-recom/awi-esm-1-1-lr_kh800/historical2/outdata/recom", "CO2f", "fgco2", 1850, 1860, "/work/ab0995/a270243/tmp"
+puts "TEMP DIR: #{new_indir}"
+
+experiment_id "historical" do
+#  indir "/work/ab0995/a270243/CO2f", 1850, 1860
+  indir new_indir, 1850, 1860
+  outdir "/work/ab0995/a270243/CO2f_outfiles"
+  variant_label "r1i1p1f1"
+  parent_variant_label "r1i1p1f1"
+  parent_first_year 1850
+  branch_year_in_parent 1850
+end
+
+cmorize_defaults do
+  mergefiles
+  time_seconds_to_days
+  mean_timestamp_adjust
+  auto_insert_time_bounds
+  # auto_downsample_frequency  # skip this
+  auto_convert_unit
+  apply_grid
+  set_global_attributes
+  set_local_attributes
+  fix_cf_names
+  compress
+  apply_cmor_filename
+end
+
+cmorize fgco2_day => [fgco2_Omon]

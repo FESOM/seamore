@@ -11,6 +11,7 @@ require_relative "../lib/cmorizer.rb"
 require_relative "../lib/directory_creator.rb"
 require_relative "../lib/step.rb"
 require_relative "../lib/version.rb"
+require_relative "../lib/setvariable.rb"
 
 ENV['GLI_DEBUG']='true' # set environment GLI_DEBUG=true to show the full backtrace
 
