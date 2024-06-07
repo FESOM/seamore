@@ -1,0 +1,3 @@
+[submodule "gitmodules/ncn"]
+	path = gitmodules/ncn
+	url = https://github.com/hegish/ncn
