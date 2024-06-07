@@ -27,6 +27,8 @@ jobs:
         uses: actions/configure-pages@v5
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.0.2 # This is the Ruby version of DRKZ's Levante
       - name: Install dependencies
         run: |
           gem install bundler
