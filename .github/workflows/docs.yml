@@ -37,12 +37,10 @@ jobs:
         run: |
           gem install yard
           yard doc
-          mkdir _site
-          mv doc _site/docs
       - name: Build with Jekyll
         uses: actions/jekyll-build-pages@v1
         with:
-          source: ./
+          source: ./doc
           destination: ./_site
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
