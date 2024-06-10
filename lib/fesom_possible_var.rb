@@ -12,6 +12,23 @@ class FesomPossibleVar
   end
 
 
+  # Generates a collection of FesomPossibleVar objects based upon a FORTRAN code snippet
+  #
+  # Maps each line of the argument [String] code via a regex based upon the initialization of
+  # this class, using attributes <variable_id>, <description>, and <unit>.
+  #
+  # Special handling of the variable "tso", which uses TimeMethods::POINT instead of the
+  # default TimeMethods::Mean
+  #
+  # TODO(PG -- Reverse Engineering): I still need to find out of the regex **needs** the parameters
+  # or if instead it is used to **figure out what values they should have for initialization**.
+  #
+  # NOTE(PG -- Reverse Engineering): This looks like the Ruby equivalent of a Python `classmethod`
+  # and seems to implement an alternative way of constructing objects of this class.
+  #
+  # @param code [String] `FORTRAN` code to pare
+  # @param sort [Boolean] Whether or not to return the variables sorted (alphabetically?) by `variable_id`.
+  # @return [Array<FesomPossibleVar>] An array of FesomPossibleVar objects
   def self.create_from_fortran_code(code, sort: true)
     vars = code.split("\n").map do |init_line|
       /.+?, ['"](?<variable_id>[^,]+?)['"], ['"](?<description>.+?)['"], ['"](?<unit>[^,]+?)['"]\) *.*/ =~ init_line
@@ -30,7 +47,8 @@ class FesomPossibleVar
     end
   end
   
-  
+  # Helper method to nicely print out this FesomPossibleVar.
+  # @return [String]
   def to_s
     "#{@variable_id}: '#{@unit}' #{@time_method} '#{@description}'"
   end
