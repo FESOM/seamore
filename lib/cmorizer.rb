@@ -25,7 +25,7 @@ module CMORizer
       new_txt = []
       requires_sanitization = false
       src_txt.each_line do |line|
-        if line.start_with?("cmorize ") && line.include("=>")
+        if line.start_with?("cmorize ") && line.include?("=>")
           first, varname, *rest = line.split
           if varname[0] =~ /[A-Z]/
             requires_sanitization = true
