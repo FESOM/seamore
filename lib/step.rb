@@ -226,7 +226,8 @@ module CMORizer
             # In the CMIP6_Omon.json:fgco2 case, an additional sign change is necessary:
             # >0: into ocean -> >0: into atm: *-1
             # -> mult_factor = mult_factor*-1
-            cmds << CDO_MULC_cmd.new(-1.390127e-10)  # negative sign to correct into ocean or into atm
+            # COMMENT: For sign change use flip_sign function 
+            cmds << CDO_MULC_cmd.new(1.390127e-10)
           when ["uatm", "Pa"]
             # notes on how this factor was derived (by chrisdane "Christopher Danek")
             # e.g. recom variable: pCO2s => CMIP6_Omon.json: spco2
