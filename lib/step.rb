@@ -187,6 +187,13 @@ module CMORizer
       end
     end
     
+    class FLIP_SIGN < IndividualBaseStep
+      def file_commands
+        cmds = []
+        cmds << CDO_MULC_cmd.new(-1)
+        cmds
+      end
+    end
     
     class AUTO_CONVERT_UNIT < IndividualBaseStep
       def self.auto_convert_unit_possible?(from_unit, to_unit)
