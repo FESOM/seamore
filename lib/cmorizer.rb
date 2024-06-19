@@ -32,7 +32,7 @@ module CMORizer
             new_txt << "#{varname} = '#{varname}'"
           end
         end
-      new_txt << line
+          new_txt << line
       end
       if requires_sanitization
         src_txt = new_txt.join("\n")
