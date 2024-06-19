@@ -1,0 +1,6 @@
+lib/ruby
+lib/ruby/gems
+.bundle
+.paths
+build
+bin/ncn
