@@ -15,10 +15,30 @@ module CMORizer
       @experiments = []
       @years_step = 1
       @eval_mode = true
+      src_txt = sanitize src_txt
       instance_eval(src_txt, src_txt)
       @eval_mode = false
     end
     
+    def sanitize(src_txt)
+  # Sanitizes the source text to avoid mistreating variable names as Ruby constants
+      new_txt = []
+      requires_sanitization = false
+      src_txt.each_line do |line|
+        if line.start_with?("cmorize ") && line.include?("=>")
+          first, varname, *rest = line.split
+          if varname[0] =~ /[A-Z]/
+            requires_sanitization = true
+            new_txt << "#{varname} = '#{varname}'"
+          end
+        end
+          new_txt << line
+      end
+      if requires_sanitization
+        src_txt = new_txt.join("\n")
+      end
+      src_txt
+      end
   
     def execute(threadcount)
       @experiments.each do |experiment|
